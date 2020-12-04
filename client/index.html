@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My App</title>
+</head>
+<body style="background-color: black;">
+    <canvas id="canvas" width="500" height="500" style="border: 1px solid white"></canvas>
+</body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+var socket = io();
+
+input = {};
+input.left= false;
+input.right = false;
+input.up = false;
+input.down = false;
+
+document.addEventListener("keydown", (e) =>{
+if(e.code == "KeyW"){
+    input.up = true;
+}
+else if(e.code == "KeyS"){
+    input.down = true;
+}
+else if(e.code == "KeyA"){
+    input.left = true;
+}
+else if(e.code == "KeyD"){
+    input.right = true;
+}
+});
+
+document.addEventListener("keyup", (e) =>{
+if(e.code == "KeyW"){
+    input.up = false;
+}
+else if(e.code == "KeyS"){
+    input.down = false;
+}
+else if(e.code == "KeyA"){
+    input.left = false;
+}
+else if(e.code == "KeyD"){
+    input.right = false;
+}
+});
+
+socket.on("getInput", () => {
+socket.emit("input", input);
+});
+
+/*
+if(e.code == "KeyW"){
+    socket.emit("UP_PRESSED", );
+}
+if(e.code == "KeyS"){
+    socket.emit("DOWN_PRESSED", 0);
+}
+if(e.code == "KeyA"){
+    socket.emit("LEFT_PRESSED", 0);
+}
+if(e.code == "KeyD"){
+    socket.emit("RIGHT_PRESSED", 0);
+}
+*/
+
+ctx = document.getElementById("canvas").getContext("2d");
+ctx.font = '30px Arial'
+
+socket.on('updatePosition', (data) =>{
+    ctx.clearRect(0, 0, 500, 500);
+    for(var i in data){
+      ctx.fillStyle = data[i].color;
+      ctx.fillRect(data[i].x, data[i].y, 50, 50);
+      console.log(data[i].x);
+    }
+});
+
+</script>
+</html>
